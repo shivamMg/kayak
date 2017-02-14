@@ -2,6 +2,7 @@ from urllib.parse import quote_plus
 from base64 import b64encode
 
 import requests
+from requests.exceptions import RequestException
 
 from .utils import OAUTH2_TOKEN_URL, APIError
 
@@ -61,8 +62,11 @@ class TwitterOAuthApi:
         }
         data = 'grant_type=client_credentials'
 
-        response = requests.post(
-            OAUTH2_TOKEN_URL, data=data, headers=headers, timeout=5)
+        try:
+            response = requests.post(
+                OAUTH2_TOKEN_URL, data=data, headers=headers, timeout=5)
+        except RequestException:
+            raise APIError('Twitter API error.')
 
         if response.status_code != requests.codes.ok:
             raise APIError('Invalid credentials. Could not get bearer token.')

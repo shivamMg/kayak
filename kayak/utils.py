@@ -15,4 +15,4 @@ class APIError(Exception):
         Helper method to return error dictionary that can be serialized as
         JSON for responses.
         """
-        return {'error': {'message': self.message}}
+        return {'error': {'message': str(self)}}

@@ -1,4 +1,5 @@
 import requests
+from requests.exceptions import RequestException
 
 from .utils import SEARCH_TWEETS_URL, APIError
 
@@ -39,8 +40,11 @@ class TwitterSearchApi:
         headers = {'Authorization': 'Bearer {}'.format(self.access_token)}
         payload = options
 
-        response = requests.get(
-            SEARCH_TWEETS_URL, params=payload, headers=headers)
+        try:
+            response = requests.get(
+                SEARCH_TWEETS_URL, params=payload, headers=headers, timeout=5)
+        except RequestException:
+            raise APIError('Twitter API error.')
 
         if response.status_code != requests.codes.ok:
             raise APIError('Invalid bearer token.')
