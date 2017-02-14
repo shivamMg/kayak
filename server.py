@@ -82,4 +82,4 @@ if __name__ == '__main__':
 
     api_obj = TwitterSearchApi(auth_obj)
 
-    app.run(host='0.0.0.0', port=8080)
+    app.run(host='0.0.0.0', port=SECRETS.get('server_port', 8080))
