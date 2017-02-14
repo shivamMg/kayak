@@ -49,12 +49,19 @@ async def index(request):
 @app.route('/api', methods=['GET'])
 async def api(request):
     hashtag = request.args.pop('hashtag', None)
-    since_id = request.args.pop('since_id', None)
+    max_id = request.args.pop('max_id', None)
 
-    tweet_list = api_obj.get_query_tweets(
-        hashtag=hashtag, since_id=since_id)
+    # If not None, hashtag would be a list
+    # In that case use first element
+    if hashtag:
+        hashtag = hashtag.pop(0)
+    if max_id:
+        max_id = int(max_id.pop(0))
 
-    return json_response(tweet_list)
+    response = api_obj.get_query_tweets(
+        hashtag=hashtag, max_id=max_id)
+
+    return json_response(response)
 
 
 if __name__ == '__main__':
@@ -71,6 +78,7 @@ if __name__ == '__main__':
     auth_obj = TwitterOAuthApi(consumer_key, consumer_secret)
     print('Setting access token...')
     auth_obj.set_access_token()
+    print('Access token:', auth_obj.access_token)
 
     api_obj = TwitterSearchApi(auth_obj)
 

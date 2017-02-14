@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kayak</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.7/semantic.min.css" />
+  <link rel="stylesheet" href="static/main.css">
+</head>
+<body>
+  <div class="navbar">
+    <div class="ui inverted large fixed menu">
+      <div class="ui container">
+        <a href="/" class="item header">Kayak</a>
+        <a href="/api" class="item">API</a>
+        <div class="right menu">
+          <a href="#" class="item">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ui container stackable centered grid">
+    <div class="one column row">
+      <div class="six wide computer eight wide tablet column">
+        <div class="ui form">
+          <div class="field">
+            <label>Hashtag</label>
+            <input type="text" id="hashtag-input">
+            <input type="hidden" id="max-id">
+          </div>
+          <button class="ui button" id="hashtag-btn">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="one column row">
+      <div class="six wide computer eight wide tablet column">
+        <div class="ui cards" id="cards-container">
+
+        </div>
+      </div>
+    </div>
+
+    <div id="card-template" style="display:none;">
+      <div class="ui fluid card">
+        <div class="content">
+          <div class="header">Elliot Fu</div>
+          <div class="meta">Date</div>
+          <div class="description">
+            Elliot Fu is a film-maker from New York.
+          </div>
+        </div>
+          <div class="extra content">
+            <a>
+              <i class="retweet icon"></i>
+              <span class="retweet-count">2</span> Retweets
+            </a>
+          </div>
+      </div>
+    </div>
+
+    <div class="one column row">
+      <div class="six wide computer eight wide tablet column">
+        <button class="ui button fluid" id="load-more-btn">Load More</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="static/main.js"></script>
+</body>
+</html>

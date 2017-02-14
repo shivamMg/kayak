@@ -51,27 +51,32 @@ class TwitterSearchApi:
 
         return response.json()
 
-    def get_query_tweets(self, hashtag=None, since_id=None):
+    def get_query_tweets(self, hashtag=None, max_id=None):
         """
         Returns Tweets that contain the hashtag `hashtag` :P and that have ids
-        that come after `since_id`. Also, it filters out tweets that have
+        that come after `max_id`. Also, it filters out tweets that have
         retweet_count less than 1.
         """
         if not hashtag:
             raise APIError('`hashtag` parameter is required.')
 
         options = {
-            'q': '%23{}'.format(hashtag),
-            'since_id': since_id
+            'q': '#{}'.format(hashtag),
+            'max_id': max_id,
+            'result_type': 'mixed',
+            'count': 15
         }
-        # If `since_id` is None, remove it from options
-        if not since_id:
-            options.pop('since_id')
+        # If `max_id` is None, remove it from options
+        if not max_id:
+            options.pop('max_id')
 
         response = self.search_tweets(**options)
 
         status_list = response.get('statuses', [])
         tweet_list = []
+        max_id = status_list[0]['id']
+
+        # Select all tweets with retweet count >= 1
         for status in status_list:
             if status.get('retweet_count') >= 1:
                 tweet_list.append({
@@ -81,4 +86,12 @@ class TwitterSearchApi:
                     'retweetCount': status['retweet_count']
                 })
 
-        return tweet_list
+            if status['id'] < max_id:
+                max_id = status['id']
+
+        return {
+            'tweets': tweet_list,
+            'meta': {
+                'maxId': max_id
+            }
+        }
