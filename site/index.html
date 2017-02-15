@@ -11,9 +11,9 @@
     <div class="ui inverted large fixed menu">
       <div class="ui container">
         <a href="/" class="item header">Kayak</a>
-        <a href="/api" class="item">API</a>
+        <a href="/api?hashtag=twitter" class="item">API</a>
         <div class="right menu">
-          <a href="#" class="item">GitHub</a>
+          <a href="https://github.com/shivammg/kayak" target="_blank" class="item">GitHub</a>
         </div>
       </div>
     </div>
@@ -22,13 +22,27 @@
   <div class="ui container stackable centered grid">
     <div class="one column row">
       <div class="six wide computer eight wide tablet column">
+        <div class="ui info message">
+          <p><strong>Note:</strong> Fetching results might be slow since the server itself would be making requests.</p>
+        </div>
         <div class="ui form">
           <div class="field">
             <label>Hashtag</label>
-            <input type="text" id="hashtag-input">
+            <input type="text" id="hashtag-input" placeholder="custserv">
             <input type="hidden" id="max-id">
           </div>
           <button class="ui button" id="hashtag-btn">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="one column row error-box">
+      <div class="six wide computer eight wide tablet column">
+        <div class="ui negative message">
+          <div class="header">
+            An error occurred
+          </div>
+          <p class="msg">e</p>
         </div>
       </div>
     </div>

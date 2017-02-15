@@ -2,15 +2,12 @@ import json
 
 from sanic import Sanic
 from sanic.exceptions import NotFound, ServerError
-from sanic.response import (
-    json as json_response,
-    html as html_response,
-    text as text_response
-)
+from sanic.response import (json as json_response, html as html_response, text
+                            as text_response)
 
-from kayak.auth import TwitterOAuthApi
-from kayak.api import TwitterSearchApi
-from kayak.utils import APIError as KayakAPIError
+from kayak.auth import TwitterOAuth2
+from kayak.kayak import KayakSearch
+from kayak.utils import KayakError
 
 app = Sanic(__name__)
 
@@ -34,11 +31,11 @@ def handle_servererror(request, exception):
     return text_response('Something bad happened.')
 
 
-# Handle Kayak module's APIError
-@app.exception(KayakAPIError)
+# Handle Kayak's error
+@app.exception(KayakError)
 def handle_apierror(request, exception):
-    response = exception.to_dict()
-    return json_response(response, status=500)
+    error = {'error': dict(message=str(exception))}
+    return json_response(error, status=500)
 
 
 @app.route('/', methods=['GET'])
@@ -48,18 +45,20 @@ async def index(request):
 
 @app.route('/api', methods=['GET'])
 async def api(request):
-    hashtag = request.args.pop('hashtag', None)
-    max_id = request.args.pop('max_id', None)
+    hashtag = request.args.pop('hashtag', [])
+    max_id = request.args.pop('max_id', [])
 
-    # If not None, hashtag would be a list
-    # In that case use first element
+    if not hashtag:
+        error = {'error': dict(message='`hashtag` parameter is required')}
+        return json_response(error, status=400)
+
+    # If not empty use the first value
     if hashtag:
         hashtag = hashtag.pop(0)
     if max_id:
         max_id = int(max_id.pop(0))
 
-    response = api_obj.get_query_tweets(
-        hashtag=hashtag, max_id=max_id)
+    response = api_obj.get_tweets(hashtag, max_id=max_id)
 
     return json_response(response)
 
@@ -75,11 +74,11 @@ if __name__ == '__main__':
     consumer_key = SECRETS.get('consumer_key', '')
     consumer_secret = SECRETS.get('consumer_secret', '')
 
-    auth_obj = TwitterOAuthApi(consumer_key, consumer_secret)
-    print('Setting access token...')
-    auth_obj.set_access_token()
+    auth_obj = TwitterOAuth2(consumer_key, consumer_secret)
+    print('Requesting access token...')
+    auth_obj.request_token()
     print('Access token:', auth_obj.access_token)
 
-    api_obj = TwitterSearchApi(auth_obj)
+    api_obj = KayakSearch(auth_obj)
 
     app.run(host='0.0.0.0', port=SECRETS.get('server_port', 8080))
